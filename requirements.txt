@@ -1,0 +1,3 @@
+googletrans
+beautifulsoup4
+pdfminer.six
