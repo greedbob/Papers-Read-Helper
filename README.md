@@ -1,10 +1,10 @@
-## Markdown-Papers-and-Translate
+## Papers-Read-Helper
 Assist to read and translate paper in foreign language.  
 Format articles from online web pages, html files, or pdf files into markdown text, and provide cross-translation functions.  
 阅读外文Paper辅助记录和翻译工具。  
-将文章从在线网页版、html文件或pdf文件，格式化为markdown文本，并提供对照翻译功能。
+将文章从在线网页版、html文件或pdf文件，格式化为中英文对照翻译的markdown文本。
 
-### Contents Tree 目录结构
+### File Contents
 ```
 Markdown-Papers-and-Translate
 ┌─ .gitignore
@@ -23,7 +23,7 @@ Markdown-Papers-and-Translate
    └─  test.py
 ```
 
-### How to use? 如何使用
+### How to use?
 - 环境  
   - python3 及依赖模块`requirements.txt`  
   - `git clone https://github.com/greedbob/Markdown-Papers-and-Translate.git`
@@ -45,21 +45,26 @@ paper2md.paper2markdown('rsc.html', 'rsc', is_trans=True)
 # 运行后将得到rsc.html.md 和 rsc.html.trans.md，后者问中英文对照。
 ```
 
-### Test 测试用例
-- 首先下载[测试用html文件](https://pubs.rsc.org/en/content/articlelanding/2018/CC/C8CC01388H)
+### Test Example
+- 首先下载：[测试用html文件](https://pubs.rsc.org/en/content/articlelanding/2018/CC/C8CC01388H)
 - 将html文件储存于test文件夹下，并改名为'rsc.html'
 - 运行脚本
 
-### 支持数据库
-数据库 | 网址
-- | -
-**Royal Society of Chemistry** | https://pubs.rsc.org/
-![](https://onlinelibrary.wiley.com/pb-assets/hub-assets/pericles/logo-header-1526603583437.png) | https://onlinelibrary.wiley.com/
+### Supported Database
+| 数据库 | 网址 |
+| - | - |
+| Royal Society of Chemistry | https://pubs.rsc.org/ |
+| Wiley Online Library | https://onlinelibrary.wiley.com/ |
+| Nature | https://www.nature.com/ |
 
 
 ### Contribute
-- 支持更多数据库的解析
-- 网页延迟加载
+- 其他数据库的解析
+- 需登录加载或延迟加载的html获取
+
+| Alipay | WeChat |
+| - | - |
+| <img src="https://greedbob.github.io/images/alipay-600.jpg" width = "200" > | <img src="https://greedbob.github.io/images/wechat-600.png" width = "200" > |
 
 ### LICENSE and Copyright
 **MIT License**  

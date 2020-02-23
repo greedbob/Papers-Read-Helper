@@ -15,16 +15,12 @@ class GetSoup:
 
     def get(self, mod=-1, src_file='', url='', db=''):
         self.mod = mod
+        self.src_file = src_file
+        self.url = url
         self.db = db
         if self.mod == 0:
-            self.url = url
             self.get_html()
-            self.get_article_part()
-        elif self.mod == 1:
-            self.src_file = src_file
-            self.get_article_part()
-        else:
-            raise TypeError
+        self.get_article_part()
 
     def get_html(self):
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
@@ -42,6 +38,9 @@ class GetSoup:
                 article_part = soup.find_all('section')
             elif self.db == 'rsc':
                 article_part = soup.find('article')
+            elif self.db == 'nature':
+                article_part = soup.find(role='main')
+                pass
             else:
                 print('article type error')
                 raise Exception
