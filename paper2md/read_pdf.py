@@ -23,9 +23,11 @@ class ReadPdf:
                 interpreter.process_page(page)
                 layout = device.get_result()
                 for part in layout:
-                    page_content = []
+                    page_content = ''
                     if isinstance(part, LTTextBoxHorizontal):
                         results = part.get_text()
                         part_content = results.replace("\n", '').replace(u'\u3000', u'')
-                        page_content.append(part_content)
-                self.content.append(page_content)
+                        if part_content != '' and len(part_content) > 2:
+                            page_content += part_content
+                            page_content += '\n\n'
+                            self.content.append(page_content)

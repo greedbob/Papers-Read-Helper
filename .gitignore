@@ -1,6 +1,7 @@
 # test files
 test/*.html
 test/*.md
+*.pdf
 
 # IDE
 .idea
