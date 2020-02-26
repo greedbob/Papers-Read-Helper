@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # encoding: utf-8
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString
+
+
+def is_navigable(temp):
+    return isinstance(temp, type(NavigableString('<b></b>')))
 
 
 class ReadHtml:
@@ -19,29 +23,44 @@ class ReadHtml:
         else:
             raise TypeError
 
-    def ignore_navigable(self, temp):
-        return isinstance(temp, type(self.article_part))
-
     def read_wiley(self):
         for part in self.article_part:
             if 'class' in part.attrs:
                 if 'article-section__abstract' in part.attrs['class']:
-                    self.content.append('### {}\n'.format(part.find('h2').string))
-                    for string in part.find('p').strings:
-                        self.content.append(string)
+                    self.content.append('## {}\n'.format(part.find('h2').string))
+                    line = ''
+                    for string in part.find('p').stripped_strings:
+                        line += string
+                    self.content.append('{}  \n\n'.format(line))
                 elif 'article-section__full' in part.attrs['class']:
                     pass
                 elif 'article-section__content' in part.attrs['class']:
-                    for child in part.children:
-                        if child.name == 'h2':
-                            self.content.append('\n### {}\n'.format(child.string))
+                    for child in part:
+                        if child.name and child.name[0] == 'h':
+                            self.content.append('{} {}\n'.format('#' * int(child.name[1]), child.string))
                         elif child.name == 'p':
-                            for string in child.strings:
-                                self.content.append(string.strip())
-                            self.content.append('\n')
+                            if not child.div:
+                                self.content.append('{}  \n\n'.format(child.get_text().strip()))
+                            elif child.div.span.img:
+                                self.content.append('{}  \n\n'.format(child.get_text().strip().replace('\n', ' ')))
+                                for div in child:
+                                    if div.name == 'div':
+                                        self.content.append('![](https://onlinelibrary.wiley.com{})  \n'
+                                                            .format(div.span.img['src'].strip()))
+                        elif child.name == 'div' and 'class' in child.attrs\
+                                and child.attrs['class'] == 'article-table-content':
+                            pass
                         elif child.name == 'section':
-                            temp = child.select("figure > a")
-                            self.content.append('![]({})\n\n'.format(temp[0].attrs['href']))
+                            if child.attrs['class'][0] == 'article-section__inline-figure':
+                                self.content.append('![](https://onlinelibrary.wiley.com{})  \n'
+                                                    .format(child.figure.a.attrs['href'].strip()))
+                                self.content.append('{}  \n\n'.format(child.figure.figcaption.find('p').get_text()))
+                            if child.attrs['class'][0] == 'article-section__sub-content':
+                                for line in child:
+                                    if line.name == 'h3':
+                                        self.content.append('### {}\n'.format(line.get_text()))
+                                    if line.name == 'p':
+                                        self.content.append('{}\n\n'.format(line.get_text().strip()))
 
     def read_rsc(self):
         for part in self.article_part:
@@ -75,14 +94,14 @@ class ReadHtml:
                 pass
             elif part.attrs['class'][0] == 'c-article-header':
                 for block in part.header:
-                    if not self.ignore_navigable(block):
+                    if is_navigable(block):
                         pass
                     elif block.name == 'h1':
                         self.content.append('# {}\n'.format(block.get_text()))
                     elif block.name == 'ul' and block.attrs['data-test'] == 'authors-list':
                         author_line = ''
                         for author in block:
-                            if self.ignore_navigable(author):
+                            if is_navigable(author):
                                 author_line += author.span.a.get_text()
                                 author_line += ', '
                         self.content.append('> Authors: {}  \n'.format(author_line.rstrip(', ')))
@@ -93,7 +112,7 @@ class ReadHtml:
                         self.content.append('> Info: {}\n\n'.format(info_line.replace('\n', '')))
             elif part.attrs['class'][0] == 'c-article-body':
                 for block in part.find_all('section'):
-                    if not self.ignore_navigable(block):
+                    if is_navigable(block):
                         pass
                     elif 'Abs' in block.attrs['aria-labelledby']:
                         self.content.append('## {}\n'.format(block.div.h2.get_text()))
@@ -109,7 +128,7 @@ class ReadHtml:
                                 if 'data-test' in line.attrs and line.attrs['data-test'] == 'figure':
                                     self.content.append('{}  \n'.format(line.figure.figcaption.b.get_text()))
                                     for item in line.figure.div:
-                                        if not self.ignore_navigable(item):
+                                        if is_navigable(item):
                                             pass
                                         elif item.attrs['class'][0] == 'c-article-section__figure-item':
                                             self.content.append('![](https:{})  \n'.format(item.a.picture.img['src']))
@@ -119,7 +138,7 @@ class ReadHtml:
                                     self.content.append('{}  \n'.format(line.get_text()))
                                 elif 'data-test' in line.attrs and line.attrs['data-test'] == 'supplementary-info':
                                     for item in line:  # Extended data figures and tables
-                                        if not self.ignore_navigable(item):
+                                        if is_navigable(item):
                                             pass
                                         elif 'id' in item.attrs and 'Fig' in item.attrs['id']:
                                             self.content.append('### {}\n'.format(item.h3.string))
