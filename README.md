@@ -6,7 +6,7 @@ Format articles from online web pages, html files, or pdf files into markdown te
 
 ### Files Tree
 ```
-./Markdown-Papers-and-Translate/
+./Papers-Read-Helper/
 ┌─paper2md
 │  ├─ paper2md.py
 │  ├─ main.py
@@ -101,4 +101,4 @@ if __name__ == '__main__':
 
 ### LICENSE and Copyright
 **MIT License**  
-**Copyright (c) 2020 [@greedbob](https//blog.greedfox.me) ([Paper2Markdown](https://github.com/greedbob/Markdown-Papers-and-Translate))**
+**Copyright (c) 2020 [@greedbob](https//blog.greedfox.me) [Paper2Markdown](https://github.com/greedbob/Markdown-Papers-and-Translate)**
